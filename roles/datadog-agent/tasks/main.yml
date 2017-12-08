@@ -1,17 +1,16 @@
 ---
-- name: Add the Datadog APT key
-  apt_key: keyserver=keyserver.ubuntu.com id=C7A7DA52
+- name: Copy repo file into place
+  copy: src=datadog.repo dest=/etc/yum.repos.d/datadog.repo owner=root group=root mode=0644
 
-- name: Add the Datadog source to the APT source list
-  apt_repository: repo='deb http://apt.datadoghq.com/ stable main' state=present
-
-- name: Install Datadog agent
-  apt: name={{item}} state=present update_cache=yes
-  with_items:
-   - datadog-agent
+- name: Install datadog-agent package
+  yum: name=datadog-agent state=latest
 
 - name: Configute datadog-agent
-  template: src=datadog.j2 dest=/etc/dd-agent/datadog.conf
+  template: src=datadog.conf.j2 dest=/etc/dd-agent/datadog.conf
+  
+- name: copy tomcat config
+  template: src=tomcat.yaml.j2 dest=/etc/dd-agent/conf.d/tomcat.yaml
+  
 
-- name: Start datadog-agent
-  service: name=datadog-agent state=restarted
+  notify: restart datadog
+ 

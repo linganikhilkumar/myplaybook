@@ -2,7 +2,9 @@
 #About: This will install datadog-agent
 #
 ---
-- hosts: '{{inventory}}'
+- hosts: tomcat-servers
   become: yes
+  user: ec2-user
   roles:
-  - datadog-agent
+     - role: datadog-agent
+
